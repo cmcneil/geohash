@@ -1,17 +1,20 @@
-from typing import Tuple
+"""Tests for geohash.py"""
 import unittest
 
 from geohash import GeoHash
 
 
 class TestGeoHash(unittest.TestCase):
+    """Tests for geohash.py"""
     def assert_hash_round_trip(self, lat: float, lng: float, dec=2):
-        h = GeoHash(lat, lng).geo_hash
-        r_lat, r_lng = GeoHash.location_from_hash(h)
+        """Hash coordinates, and unhash approximate ones."""
+        geo_hash = GeoHash(lat, lng).geo_hash
+        r_lat, r_lng = GeoHash.location_from_hash(geo_hash)
         self.assertAlmostEqual(lat, r_lat, dec)
         self.assertAlmostEqual(lng, r_lng, dec)
 
     def test_hash_values(self):
+        """Test cases from android-geohash"""
         self.assertEqual(GeoHash(geo_hash="7zzzzzzzzz"), GeoHash(0, 0))
         self.assertEqual(GeoHash(geo_hash="2pbpbpbpbp"), GeoHash(0, -180))
         self.assertEqual(GeoHash(geo_hash="rzzzzzzzzz"), GeoHash(0, 180))
@@ -29,6 +32,7 @@ class TestGeoHash(unittest.TestCase):
         self.assertEqual(GeoHash(geo_hash="4w2kg3s54y"), GeoHash(-54, -67))
 
     def test_location_from_hash(self):
+        """Test cases from android-geohash"""
         self.assert_hash_round_trip(37.7853074, -122.4054274)
         self.assert_hash_round_trip(38.98719, -77.250783)
         self.assert_hash_round_trip(29.3760648, 47.9818853)
@@ -46,6 +50,7 @@ class TestGeoHash(unittest.TestCase):
         self.assert_hash_round_trip(90, 180)
 
     def test_custom_precision(self):
+        """Test cases from android-geohash"""
         self.assertEqual(GeoHash(geo_hash="000000"), GeoHash(-90, -180, 6))
         self.assertEqual(GeoHash(geo_hash="zzzzzzzzzzzzzzzzzzzz"), GeoHash(90, 180, 20))
         self.assertEqual(GeoHash(geo_hash="p"), GeoHash(-90, 180, 1))

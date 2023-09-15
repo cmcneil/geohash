@@ -87,7 +87,7 @@ class GeoHash:
     def location_from_hash(geo_hash: str) -> Tuple[float, float]:
         """Reverses the geohashing algorithm to get an approximate location."""
         decoded = 0
-        num_bits = len() * BITS_PER_BASE32_CHAR
+        num_bits = len(geo_hash) * BITS_PER_BASE32_CHAR
 
         for i, h_char in enumerate(geo_hash):
             bits = BASE32_CHARS.index(h_char)
