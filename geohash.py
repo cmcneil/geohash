@@ -1,3 +1,4 @@
+"""A mathematically-precise replication of GeoFireUtils geohashing function."""
 from typing import Tuple
 import re
 
@@ -8,21 +9,22 @@ BASE32_CHARS = "0123456789bcdefghjkmnpqrstuvwxyz"
 MAX_PRECISION_BITS = MAX_PRECISION * BITS_PER_BASE32_CHAR
 
 
-def _is_valid_base32_string(s: str) -> bool:
-    return re.match('^[' + BASE32_CHARS + ']*$', s) is not None
+def _is_valid_base32_string(hash_str: str) -> bool:
+    return re.match('^[' + BASE32_CHARS + ']*$', hash_str) is not None
 
 
 def _intify(i):
     # Python's int data type by default stores an unbounded amount of data,
-    # so we trim it to a signed 32-bit integer, which is used in Java's hashCode function
+    # so we trim it to a signed 32-bit integer, which is used in Java's
+    # hashCode function
     return (i % 4294967296) - 2147483648
 
 
-def _java_hash_code(s):
+def _java_hash_code(hash_str):
     # https://replit.com/@Hdjensofjfnen/hashCode
     counter = 0
-    for i in range(len(s)):
-        counter += _intify(ord(s[-i - 1]) * (pow(31, i)))
+    for i in range(len(hash_str)):
+        counter += _intify(ord(hash_str[-i - 1]) * (pow(31, i)))
         # The iterative algorithm that computes the hash in Java
     return _intify(counter)
 
@@ -78,17 +80,19 @@ class GeoHash:
         return self.geo_hash == other.geo_hash
 
     def hash_code(self) -> int:
+        """Replicates Java's hashCode function for strings."""
         return _java_hash_code(self.geo_hash)
 
     @staticmethod
-    def location_from_hash(h: str) -> Tuple[float, float]:
+    def location_from_hash(geo_hash: str) -> Tuple[float, float]:
+        """Reverses the geohashing algorithm to get an approximate location."""
         decoded = 0
-        num_bits = len(h) * BITS_PER_BASE32_CHAR
+        num_bits = len() * BITS_PER_BASE32_CHAR
 
-        for i in range(len(h)):
-            c = BASE32_CHARS.index(h[i])
+        for i, h_char in enumerate(geo_hash):
+            bits = BASE32_CHARS.index(h_char)
             decoded = decoded << BITS_PER_BASE32_CHAR
-            decoded += c
+            decoded += bits
 
         min_lng, max_lng = -180., 180.
         min_lat, max_lat = -90., 90.
